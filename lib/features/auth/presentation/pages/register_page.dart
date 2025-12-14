@@ -178,8 +178,7 @@ class _RegisterPageContentState extends State<_RegisterPageContent> {
                       const SizedBox(height: 24),
 
                       // Role Selection
-                      _buildRoleSelector(isLoading),
-
+                      // _buildRoleSelector(isLoading),
                       const SizedBox(height: 24),
 
                       // Full Name Field

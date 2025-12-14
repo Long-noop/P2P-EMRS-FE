@@ -1,3 +1,4 @@
+import 'package:fe_capstone_project/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -163,10 +164,9 @@ class _LoginPageContentState extends State<_LoginPageContent> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
-                            // TODO: Add forgot password route
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Forgot password coming soon!'),
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const ForgotPasswordPage(),
                               ),
                             );
                           },
