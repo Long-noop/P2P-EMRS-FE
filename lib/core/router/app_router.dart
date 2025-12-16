@@ -1,3 +1,6 @@
+import 'package:fe_capstone_project/features/booking/presentation/pages/booking_detail_page.dart';
+import 'package:fe_capstone_project/features/booking/presentation/pages/owner_booking_page.dart';
+import 'package:fe_capstone_project/features/booking/presentation/pages/renter_booking_page.dart';
 import 'package:fe_capstone_project/features/owner_vehicle/presentation/pages/owner_dashboard_page.dart';
 import 'package:fe_capstone_project/features/renter/presentation/pages/become_owner_page.dart';
 import 'package:fe_capstone_project/features/vehicle/presentation/pages/vehicle_detail_page.dart';
@@ -99,6 +102,21 @@ class AppRouter {
             builder: (context, state) {
               final vehicleId = state.pathParameters['id']!;
               return VehicleDetailPage(vehicleId: vehicleId);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/bookings',
+        name: 'bookings page',
+        builder: (context, state) => const RenterBookingsPage(),
+        routes: [
+          GoRoute(
+            path: '/bookings/:id',
+            name: 'booking detail',
+            builder: (context, state) {
+              final bookingId = state.pathParameters['id']!;
+              return BookingDetailPage(bookingId: bookingId);
             },
           ),
         ],

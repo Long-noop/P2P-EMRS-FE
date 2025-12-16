@@ -1,5 +1,8 @@
 import 'package:fe_capstone_project/features/auth/domain/entities/user.dart';
 import 'package:fe_capstone_project/features/auth/presentation/pages/profile.dart';
+import 'package:fe_capstone_project/features/booking/presentation/pages/owner_booking_page.dart';
+import 'package:fe_capstone_project/features/booking/presentation/pages/renter_booking_page.dart';
+import 'package:fe_capstone_project/features/notification/presentation/pages/notification_pages.dart';
 import 'package:fe_capstone_project/features/renter/presentation/pages/become_owner_page.dart';
 import 'package:fe_capstone_project/features/vehicle/presentation/pages/browse_vehices_page.dart';
 import 'package:flutter/material.dart';
@@ -56,8 +59,8 @@ class _MainShellState extends State<MainShell> {
             const BrowseVehiclesPage(),
             // const _BookmarksPage(),
             if (isOwner) OwnerDashboardPage() else BecomeOwnerPage(),
+            const RenterBookingsPage(),
             const _NotificationsPage(),
-            // isOwner ? const OwnerProfilePage() : const _RenterProfilePage(),
             const ProfilePage(),
           ];
 
@@ -95,8 +98,6 @@ class _MainShellState extends State<MainShell> {
               ),
               _buildNavItem(
                 index: 1,
-                // icon: Icons.bookmark_outline,
-                // activeIcon: Icons.bookmark,
                 icon: isOwner ? Icons.two_wheeler_outlined : Icons.add_business,
                 activeIcon: isOwner
                     ? Icons.two_wheeler_outlined
@@ -104,12 +105,17 @@ class _MainShellState extends State<MainShell> {
               ),
               _buildNavItem(
                 index: 2,
+                icon: Icons.bookmark_outline,
+                activeIcon: Icons.bookmark,
+              ),
+              _buildNavItem(
+                index: 3,
                 icon: Icons.notifications_outlined,
                 activeIcon: Icons.notifications,
                 hasBadge: true,
               ),
               _buildNavItem(
-                index: 3,
+                index: 4,
                 icon: Icons.person_outline,
                 activeIcon: Icons.person,
               ),
