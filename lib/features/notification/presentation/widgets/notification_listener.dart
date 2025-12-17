@@ -49,7 +49,6 @@ class _NotificationListenerWidgetState
 
       // Show toast
       _toastService.showNotificationToast(
-        context,
         title: title,
         message: message,
         type: type,

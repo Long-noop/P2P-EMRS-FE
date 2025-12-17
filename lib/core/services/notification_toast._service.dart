@@ -8,13 +8,26 @@ class NotificationToastService {
   factory NotificationToastService() => _instance;
   NotificationToastService._internal();
 
-  void showNotificationToast(
-    BuildContext context, {
+  // ✅ FIX: Store navigatorKey to access overlay context
+  GlobalKey<NavigatorState>? _navigatorKey;
+
+  void setNavigatorKey(GlobalKey<NavigatorState> key) {
+    _navigatorKey = key;
+  }
+
+  void showNotificationToast({
     required String title,
     required String message,
     required String type,
     VoidCallback? onTap,
   }) {
+    // ✅ FIX: Get context from navigatorKey instead of parameter
+    final context = _navigatorKey?.currentContext;
+    if (context == null) {
+      print('⚠️ [NotificationToast] No navigator context available');
+      return;
+    }
+
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 

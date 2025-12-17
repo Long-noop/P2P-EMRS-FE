@@ -2,6 +2,7 @@ import 'package:fe_capstone_project/features/booking/presentation/pages/booking_
 import 'package:fe_capstone_project/features/booking/presentation/pages/booking_page.dart';
 import 'package:fe_capstone_project/features/notification/presentation/pages/notification_pages.dart';
 import 'package:fe_capstone_project/features/owner_vehicle/presentation/pages/owner_dashboard_page.dart';
+import 'package:fe_capstone_project/features/owner_vehicle/presentation/pages/owner_entry_page.dart';
 import 'package:fe_capstone_project/features/renter/presentation/pages/become_owner_page.dart';
 import 'package:fe_capstone_project/features/vehicle/presentation/pages/browse_vehices_page.dart';
 import 'package:fe_capstone_project/features/vehicle/presentation/pages/vehicle_detail_page.dart';
@@ -15,6 +16,8 @@ import '../../features/auth/presentation/pages/profile.dart';
 import '../../features/main/presentation/pages/main_shell.dart';
 import '../../features/owner_vehicle/presentation/pages/bike_registration_page.dart';
 import '../../features/owner_vehicle/presentation/pages/vehicle_detail_edit_page.dart';
+
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// App Router with ShellRoute for persistent BottomNavigationBar
 class AppRouter {
@@ -83,6 +86,15 @@ class AppRouter {
                 },
               ),
             ],
+          ),
+
+          GoRoute(
+            path: '/owner-entry',
+            name: 'owner-entry',
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const OwnerEntryPage(),
+            ),
           ),
 
           // OWNER/BECOME OWNER TAB
