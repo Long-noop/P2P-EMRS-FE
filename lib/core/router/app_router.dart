@@ -1,6 +1,5 @@
 import 'package:fe_capstone_project/features/booking/presentation/pages/booking_detail_page.dart';
-import 'package:fe_capstone_project/features/booking/presentation/pages/owner_booking_page.dart';
-import 'package:fe_capstone_project/features/booking/presentation/pages/renter_booking_page.dart';
+import 'package:fe_capstone_project/features/booking/presentation/pages/booking_page.dart';
 import 'package:fe_capstone_project/features/notification/presentation/pages/notification_pages.dart';
 import 'package:fe_capstone_project/features/owner_vehicle/presentation/pages/owner_dashboard_page.dart';
 import 'package:fe_capstone_project/features/renter/presentation/pages/become_owner_page.dart';
@@ -108,11 +107,6 @@ class AppRouter {
                   return VehicleDetailEditPage(vehicleId: vehicleId);
                 },
               ),
-              GoRoute(
-                path: 'bookings',
-                name: 'owner-bookings',
-                builder: (context, state) => const OwnerBookingsPage(),
-              ),
             ],
           ),
 
@@ -133,16 +127,16 @@ class AppRouter {
             ],
           ),
 
-          // BOOKINGS TAB
+          // BOOKINGS TAB - UNIFIED PAGE FOR BOTH RENTER AND OWNER
           GoRoute(
             path: '/bookings',
             name: 'bookings-page',
             pageBuilder: (context, state) => NoTransitionPage(
               key: state.pageKey,
-              child: const RenterBookingsPage(),
+              child: const UnifiedBookingsPage(),
             ),
             routes: [
-              // Booking detail (with navbar) - THIS IS THE FIX!
+              // Booking detail (with navbar)
               GoRoute(
                 path: ':id',
                 name: 'booking-detail',

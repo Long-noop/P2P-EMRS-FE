@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:logger/logger.dart';
 import '../storage/storage_service.dart';
 
 /// Socket service for real-time notifications
@@ -10,6 +11,16 @@ class SocketService {
 
   IO.Socket? _socket;
   final StorageService _storageService = StorageService();
+  final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 0,
+      errorMethodCount: 5,
+      lineLength: 80,
+      colors: true,
+      printEmojis: true,
+      printTime: true,
+    ),
+  );
 
   // Stream controllers
   final _connectionController = StreamController<bool>.broadcast();
@@ -30,14 +41,14 @@ class SocketService {
   /// Connect to WebSocket server
   Future<void> connect(String serverUrl) async {
     if (_socket != null && _socket!.connected) {
-      print('Socket already connected');
+      _logger.i('Socket already connected');
       return;
     }
 
     try {
       final token = await _storageService.getToken();
       if (token == null) {
-        print('No auth token available');
+        _logger.w('No auth token available for socket connection');
         return;
       }
 
@@ -54,9 +65,9 @@ class SocketService {
       _setupListeners();
       _socket!.connect();
 
-      print('Socket connecting to $serverUrl/notifications');
-    } catch (e) {
-      print('Socket connection error: $e');
+      _logger.i('Socket connecting to $serverUrl/notifications');
+    } catch (e, stackTrace) {
+      _logger.e('Socket connection error', error: e, stackTrace: stackTrace);
     }
   }
 
@@ -65,53 +76,82 @@ class SocketService {
 
     // Connection events
     _socket!.onConnect((_) {
-      print('Socket connected');
+      _logger.i('✅ Socket connected successfully');
       _connectionController.add(true);
     });
 
     _socket!.onDisconnect((_) {
-      print('Socket disconnected');
+      _logger.w('❌ Socket disconnected');
       _connectionController.add(false);
     });
 
     _socket!.onConnectError((error) {
-      print('Socket connection error: $error');
+      _logger.e('🔴 Socket connection error: $error');
       _connectionController.add(false);
     });
 
     _socket!.onError((error) {
-      print('Socket error: $error');
+      _logger.e('🔴 Socket error: $error');
     });
 
     // Connection confirmation
     _socket!.on('connected', (data) {
-      print('Connection confirmed: $data');
+      _logger.d('✅ Connection confirmed: $data');
     });
 
-    // Notification events
+    // Notification events - matching backend event names
     _socket!.on('booking_request', (data) {
-      print('Received booking_request: $data');
-      _notificationController.add({'type': 'booking_request', 'data': data});
+      _logger.i('🔔 Received booking_request notification');
+      _logger.d('Booking request data: $data');
+      _notificationController.add({'type': 'BOOKING_REQUEST', 'data': data});
     });
 
     _socket!.on('booking_confirmed', (data) {
-      print('Received booking_confirmed: $data');
-      _notificationController.add({'type': 'booking_confirmed', 'data': data});
+      _logger.i('🔔 Received booking_confirmed notification');
+      _logger.d('Booking confirmed data: $data');
+      _notificationController.add({'type': 'BOOKING_CONFIRMED', 'data': data});
     });
 
     _socket!.on('booking_rejected', (data) {
-      print('Received booking_rejected: $data');
-      _notificationController.add({'type': 'booking_rejected', 'data': data});
+      _logger.i('🔔 Received booking_rejected notification');
+      _logger.d('Booking rejected data: $data');
+      _notificationController.add({'type': 'BOOKING_REJECTED', 'data': data});
     });
 
     _socket!.on('booking_cancelled', (data) {
-      print('Received booking_cancelled: $data');
-      _notificationController.add({'type': 'booking_cancelled', 'data': data});
+      _logger.i('🔔 Received booking_cancelled notification');
+      _logger.d('Booking cancelled data: $data');
+      _notificationController.add({'type': 'BOOKING_CANCELLED', 'data': data});
+    });
+
+    _socket!.on('trip_started', (data) {
+      _logger.i('🔔 Received trip_started notification');
+      _logger.d('Trip started data: $data');
+      _notificationController.add({'type': 'TRIP_STARTED', 'data': data});
+    });
+
+    _socket!.on('trip_completed', (data) {
+      _logger.i('🔔 Received trip_completed notification');
+      _logger.d('Trip completed data: $data');
+      _notificationController.add({'type': 'TRIP_COMPLETED', 'data': data});
+    });
+
+    _socket!.on('payment_success', (data) {
+      _logger.i('🔔 Received payment_success notification');
+      _logger.d('Payment success data: $data');
+      _notificationController.add({'type': 'PAYMENT_SUCCESS', 'data': data});
+    });
+
+    _socket!.on('payment_failed', (data) {
+      _logger.i('🔔 Received payment_failed notification');
+      _logger.d('Payment failed data: $data');
+      _notificationController.add({'type': 'PAYMENT_FAILED', 'data': data});
     });
 
     // Booking status changes
     _socket!.on('booking_status_changed', (data) {
-      print('Received booking_status_changed: $data');
+      _logger.i('📊 Received booking_status_changed event');
+      _logger.d('Status changed data: $data');
       _bookingUpdateController.add(data);
     });
   }
@@ -120,7 +160,9 @@ class SocketService {
   void subscribeToBooking(String bookingId) {
     if (_socket != null && _socket!.connected) {
       _socket!.emit('subscribe_booking', {'bookingId': bookingId});
-      print('Subscribed to booking: $bookingId');
+      _logger.i('📌 Subscribed to booking: $bookingId');
+    } else {
+      _logger.w('Cannot subscribe to booking - socket not connected');
     }
   }
 
@@ -128,7 +170,9 @@ class SocketService {
   void unsubscribeFromBooking(String bookingId) {
     if (_socket != null && _socket!.connected) {
       _socket!.emit('unsubscribe_booking', {'bookingId': bookingId});
-      print('Unsubscribed from booking: $bookingId');
+      _logger.i('📌 Unsubscribed from booking: $bookingId');
+    } else {
+      _logger.w('Cannot unsubscribe from booking - socket not connected');
     }
   }
 
@@ -137,7 +181,7 @@ class SocketService {
     _socket?.disconnect();
     _socket?.dispose();
     _socket = null;
-    print('Socket disconnected');
+    _logger.i('🔌 Socket disconnected and disposed');
   }
 
   /// Dispose all resources
@@ -146,5 +190,6 @@ class SocketService {
     _connectionController.close();
     _notificationController.close();
     _bookingUpdateController.close();
+    _logger.d('Socket service disposed - all streams closed');
   }
 }
